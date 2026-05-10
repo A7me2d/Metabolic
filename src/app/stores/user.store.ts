@@ -1,14 +1,16 @@
 import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { User, DailyTargets, ActivityLevel } from '../models';
-import { LocalStorageService } from '../services/data';
+import { DataService } from '../services/data';
 import { MetabolismService } from '../services/metabolism';
+import { AuthService } from '../services/supabase';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserStore {
-  private dataService = inject(LocalStorageService);
+  private dataService = inject(DataService);
   private metabolismService = inject(MetabolismService);
+  private authService = inject(AuthService);
 
   // Core state
   private _user = signal<User | null>(null);
@@ -51,11 +53,11 @@ export class UserStore {
     // Load user from storage on init
     this.loadUser();
     
-    // Persist user changes to storage
+    // Persist profile changes after the initial load
     effect(() => {
       const user = this._user();
       if (user) {
-        this.dataService.saveUser(user);
+        void this.dataService.saveUser(user);
       }
     });
   }
@@ -66,11 +68,6 @@ export class UserStore {
     this._error.set(null);
     
     try {
-      // Check if localStorage is available (not during SSR)
-      if (typeof localStorage === 'undefined') {
-        this._user.set(null);
-        return;
-      }
       const user = await this.dataService.getUser();
       this._user.set(user);
     } catch (e) {
@@ -81,17 +78,53 @@ export class UserStore {
     }
   }
 
-  async createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+  async createUser(
+    userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+    password: string
+  ): Promise<User> {
     const now = new Date().toISOString();
-    const user: User = {
-      ...userData,
-      id: crypto.randomUUID(),
-      createdAt: now,
-      updatedAt: now
-    };
-    
-    this._user.set(user);
+    const signUpResult = await this.authService.signUp(userData.email ?? '', password, {
+      name: userData.name,
+      age: userData.age,
+      weight: userData.weight,
+      height: userData.height,
+      gender: userData.gender,
+      activity_level: userData.activityLevel,
+      goal: userData.goal
+    });
+
+    if (!signUpResult.hasSession) {
+      throw new Error('Account created. If email confirmation is enabled in Supabase, confirm your email first, then sign in.');
+    }
+
+    const user = await this.dataService.getUser();
+    if (!user) {
+      throw new Error('User signup succeeded, but profile could not be loaded.');
+    }
+
+    this._user.set({
+      ...user,
+      createdAt: user.createdAt ?? now,
+      updatedAt: user.updatedAt ?? now
+    });
     return user;
+  }
+
+  async login(email: string, password: string): Promise<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    try {
+      await this.authService.signIn(email, password);
+      const user = await this.dataService.getUser();
+      this._user.set(user);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to sign in';
+      this._error.set(message);
+      throw e;
+    } finally {
+      this._isLoading.set(false);
+    }
   }
 
   async updateUser(updates: Partial<User>): Promise<void> {
@@ -115,8 +148,8 @@ export class UserStore {
     await this.updateUser({ activityLevel: level });
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
+    await this.authService.signOut();
     this._user.set(null);
-    localStorage.clear();
   }
 }

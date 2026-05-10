@@ -1,13 +1,13 @@
 import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { Meal, Supplement, Macros } from '../models';
-import { LocalStorageService } from '../services/data';
+import { DataService } from '../services/data';
 import { UserStore } from './user.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NutritionStore {
-  private dataService = inject(LocalStorageService);
+  private dataService = inject(DataService);
   private userStore = inject(UserStore);
 
   // Core state
@@ -73,6 +73,9 @@ export class NutritionStore {
       const date = this._selectedDate();
       if (user) {
         this.loadDailyData(user.id, date);
+      } else {
+        this._meals.set([]);
+        this._supplements.set([]);
       }
     });
 
