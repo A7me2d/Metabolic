@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
 import { DataService, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, SupabaseDataService } from './services';
 
 // API Key from plan.md
-const GEMINI_API_KEY_VALUE = 'AIzaSyBl4DhYoIU1lii_55oC7gFQ4voSgu1Bpo8';
+const GEMINI_API_KEY_VALUE = 'AIzaSyBREjCdIgy2it7F-QHRAELez8ZygQkP-04';
 
 export const appConfig: ApplicationConfig = {
   providers: [
