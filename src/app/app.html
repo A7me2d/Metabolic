@@ -1,8 +1,8 @@
 <div class="app-shell">
   <div class="app-layer">
     @if (isLoading()) {
-      <div class="min-h-screen flex items-center justify-center px-6">
-        <div class="glass-panel rounded-[2rem] px-10 py-12 text-center">
+      <div class="min-h-screen flex items-center justify-center px-4 sm:px-6">
+        <div class="glass-panel rounded-[1.75rem] px-6 py-8 text-center sm:rounded-[2rem] sm:px-10 sm:py-12">
           <div class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-emerald-400/40 border-t-emerald-300"></div>
           <p class="text-lg font-semibold text-white">Loading your performance hub</p>
           <p class="mt-2 text-sm text-slate-400">Syncing profile, targets, and daily tracking.</p>
@@ -13,15 +13,15 @@
     } @else {
       <app-dashboard />
 
-      <div id="manual-entry-section" class="px-4 pb-28 md:px-6">
+      <div id="manual-entry-section" class="px-3 pb-24 sm:px-4 sm:pb-28 md:px-6">
         <div class="mx-auto max-w-6xl">
           <app-manual-entry />
         </div>
       </div>
 
-      <div class="fixed bottom-5 right-4 z-40 md:bottom-8 md:right-8">
+      <div class="fixed bottom-4 right-3 z-40 sm:bottom-5 sm:right-4 md:bottom-8 md:right-8">
         @if (showAddMenu()) {
-          <div class="absolute bottom-20 right-0 mb-2 flex min-w-52 flex-col gap-3">
+          <div class="absolute bottom-18 right-0 mb-2 flex w-[min(18rem,calc(100vw-1.5rem))] flex-col gap-3 sm:bottom-20 sm:min-w-52">
             <button
               (click)="openCamera()"
               class="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-300/40">
@@ -55,19 +55,19 @@
 
         <button
           (click)="toggleAddMenu()"
-          class="flex h-16 w-16 items-center justify-center rounded-[1.6rem] bg-linear-to-br from-emerald-400 via-lime-300 to-orange-400 text-slate-950 shadow-[0_22px_60px_rgba(74,222,128,0.45)] transition duration-300 hover:scale-105"
+          class="flex h-14 w-14 items-center justify-center rounded-[1.3rem] bg-linear-to-br from-emerald-400 via-lime-300 to-orange-400 text-slate-950 shadow-[0_22px_60px_rgba(74,222,128,0.45)] transition duration-300 hover:scale-105 sm:h-16 sm:w-16 sm:rounded-[1.6rem]"
           [class.rotate-45]="showAddMenu()">
-          <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 4v16m8-8H4"/>
           </svg>
         </button>
       </div>
 
       @if (showCamera()) {
-        <div class="fixed inset-0 z-50 flex flex-col bg-slate-950/95 p-4 backdrop-blur-xl">
+        <div class="fixed inset-0 z-50 flex flex-col bg-slate-950/95 p-3 sm:p-4 backdrop-blur-xl">
           <button
             (click)="showCamera.set(false)"
-            class="absolute right-4 top-4 rounded-full border border-white/10 bg-white/5 p-2 text-white/70 transition hover:text-white">
+            class="absolute right-3 top-3 rounded-full border border-white/10 bg-white/5 p-2 text-white/70 transition hover:text-white sm:right-4 sm:top-4">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -92,15 +92,15 @@
   </div>
 
   @if (ui.pendingCount() > 0) {
-    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 px-6 backdrop-blur-sm">
-      <div class="glass-panel rounded-[2rem] px-8 py-7 text-center">
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 px-4 sm:px-6 backdrop-blur-sm">
+      <div class="glass-panel rounded-[1.75rem] px-6 py-6 text-center sm:rounded-[2rem] sm:px-8 sm:py-7">
         <div class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-emerald-400/35 border-t-emerald-300"></div>
         <p class="text-lg font-semibold text-white">{{ ui.loadingMessage() || 'Working...' }}</p>
       </div>
     </div>
   }
 
-  <div class="pointer-events-none fixed right-4 top-4 z-[80] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+  <div class="pointer-events-none fixed left-3 right-3 top-3 z-[80] flex w-auto flex-col gap-3 sm:left-auto sm:right-4 sm:top-4 sm:w-[min(24rem,calc(100vw-2rem))]">
     @for (toast of ui.toasts(); track toast.id) {
       <div
         class="pointer-events-auto rounded-2xl border px-4 py-3 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl"

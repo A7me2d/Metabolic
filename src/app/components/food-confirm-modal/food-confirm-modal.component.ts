@@ -7,10 +7,10 @@ import { GeminiFoodResponse, Macros } from '../../models';
   selector: 'app-food-confirm-modal',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-xl" (click)="onBackdropClick($event)">
-      <div class="glass-panel max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[2rem]" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-3 sm:p-4 backdrop-blur-xl" (click)="onBackdropClick($event)">
+      <div class="glass-panel max-h-[94vh] w-full max-w-4xl overflow-auto rounded-[1.75rem] sm:max-h-[92vh] sm:rounded-[2rem]" (click)="$event.stopPropagation()">
         <div class="grid lg:grid-cols-[0.95fr_1.05fr]">
-          <div class="relative min-h-72 bg-slate-950/70">
+          <div class="relative min-h-56 bg-slate-950/70 sm:min-h-72">
             <img *ngIf="imageBase64()" [src]="'data:image/jpeg;base64,' + imageBase64()" class="h-full w-full object-cover" alt="Food image">
             <div class="absolute inset-x-0 bottom-0 p-4">
               <div *ngIf="result()?.confidence" class="inline-flex rounded-full border border-white/10 bg-black/45 px-3 py-1 text-xs font-semibold text-white">
@@ -19,10 +19,10 @@ import { GeminiFoodResponse, Macros } from '../../models';
             </div>
           </div>
 
-          <div class="p-6 md:p-8">
-            <div class="mb-6">
+          <div class="p-4 sm:p-6 md:p-8">
+            <div class="mb-5 sm:mb-6">
               <div class="text-xs uppercase tracking-[0.3em] text-slate-500">Review capture</div>
-              <h2 class="mt-2 text-3xl font-bold text-white">Confirm and refine the detection</h2>
+              <h2 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Confirm and refine the detection</h2>
               <p class="mt-2 text-sm leading-6 text-slate-400">Use the AI estimate as a starting point, then tighten the food label and macros before logging it.</p>
             </div>
 
@@ -37,26 +37,26 @@ import { GeminiFoodResponse, Macros } from '../../models';
               </div>
 
               <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-                <div class="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
+                <div class="rounded-[1.15rem] border border-white/10 bg-white/5 p-3 sm:rounded-[1.35rem] sm:p-4">
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Calories</label>
                   <input type="number" [(ngModel)]="editedMacros.cal" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
                 </div>
-                <div class="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
+                <div class="rounded-[1.15rem] border border-white/10 bg-white/5 p-3 sm:rounded-[1.35rem] sm:p-4">
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Protein</label>
                   <input type="number" [(ngModel)]="editedMacros.p" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
                 </div>
-                <div class="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
+                <div class="rounded-[1.15rem] border border-white/10 bg-white/5 p-3 sm:rounded-[1.35rem] sm:p-4">
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Carbs</label>
                   <input type="number" [(ngModel)]="editedMacros.c" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
                 </div>
-                <div class="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
+                <div class="rounded-[1.15rem] border border-white/10 bg-white/5 p-3 sm:rounded-[1.35rem] sm:p-4">
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Fat</label>
                   <input type="number" [(ngModel)]="editedMacros.f" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
                 </div>
               </div>
             </div>
 
-            <div class="mt-8 flex gap-3">
+            <div class="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
               <button (click)="cancel()" class="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 font-semibold text-slate-200 transition hover:bg-white/10">
                 Cancel
               </button>

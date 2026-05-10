@@ -9,28 +9,28 @@ import { UiFeedbackService } from '../../services';
   selector: 'app-onboarding',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="relative min-h-screen overflow-hidden px-4 py-8 md:px-6">
-      <div class="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-6 lg:grid-cols-[1fr_0.95fr]">
-        <section class="glass-panel rounded-[2.5rem] p-7 md:p-10">
+    <div class="relative min-h-screen overflow-hidden px-3 py-4 sm:px-4 sm:py-8 md:px-6">
+      <div class="mx-auto grid min-h-[calc(100vh-2rem)] max-w-6xl items-start gap-4 sm:min-h-[calc(100vh-4rem)] sm:gap-6 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+        <section class="glass-panel rounded-[1.75rem] p-5 sm:rounded-[2.5rem] sm:p-7 md:p-10">
           <div class="max-w-xl">
-            <div class="inline-flex rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-sky-200">
+            <div class="inline-flex max-w-full rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-sky-200 sm:text-xs sm:tracking-[0.3em]">
               Supabase connected
             </div>
-            <h1 class="mt-6 text-4xl font-bold text-white md:text-6xl">Your nutrition tracker now has real accounts and cloud data.</h1>
+            <h1 class="mt-5 text-3xl font-bold leading-tight text-white sm:mt-6 sm:text-4xl md:text-6xl">Your nutrition tracker now has real accounts and cloud data.</h1>
             <p class="mt-4 text-sm leading-7 text-slate-300 md:text-base">
               Sign in from any device, keep meals synced, and store every profile, meal, and supplement in Supabase.
             </p>
 
-            <div class="mt-8 grid gap-3 md:grid-cols-3">
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+            <div class="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-3">
+              <div class="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 sm:rounded-[1.5rem]">
                 <div class="text-sm font-semibold text-white">Real login</div>
                 <div class="mt-2 text-sm text-slate-400">Email and password auth with Supabase.</div>
               </div>
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <div class="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 sm:rounded-[1.5rem]">
                 <div class="text-sm font-semibold text-white">Cloud sync</div>
                 <div class="mt-2 text-sm text-slate-400">Meals and supplements tied to each user.</div>
               </div>
-              <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <div class="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 sm:rounded-[1.5rem]">
                 <div class="text-sm font-semibold text-white">Private data</div>
                 <div class="mt-2 text-sm text-slate-400">RLS policies protect every account.</div>
               </div>
@@ -38,21 +38,21 @@ import { UiFeedbackService } from '../../services';
           </div>
         </section>
 
-        <section class="glass-panel rounded-[2.5rem] p-6 md:p-8">
-          <div class="mb-6 flex items-center justify-between gap-4">
+        <section class="glass-panel rounded-[1.75rem] p-4 sm:rounded-[2.5rem] sm:p-6 md:p-8">
+          <div class="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div class="text-xs uppercase tracking-[0.3em] text-slate-500">
                 {{ authMode() === 'signup' ? 'Create account' : 'Welcome back' }}
               </div>
-              <h2 class="mt-2 text-2xl font-bold text-white">
+              <h2 class="mt-2 text-xl font-bold text-white sm:text-2xl">
                 {{ authMode() === 'signup' ? 'Launch your dashboard' : 'Sign in to continue' }}
               </h2>
             </div>
 
-            <div class="flex rounded-2xl border border-white/10 bg-slate-950/40 p-1">
+            <div class="flex w-full rounded-2xl border border-white/10 bg-slate-950/40 p-1 sm:w-auto">
               <button
                 (click)="setMode('signup')"
-                class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+                class="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition sm:flex-none"
                 [class.bg-emerald-300]="authMode() === 'signup'"
                 [class.text-slate-950]="authMode() === 'signup'"
                 [class.text-slate-400]="authMode() !== 'signup'">
@@ -60,7 +60,7 @@ import { UiFeedbackService } from '../../services';
               </button>
               <button
                 (click)="setMode('signin')"
-                class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+                class="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition sm:flex-none"
                 [class.bg-sky-300]="authMode() === 'signin'"
                 [class.text-slate-950]="authMode() === 'signin'"
                 [class.text-slate-400]="authMode() !== 'signin'">
@@ -102,7 +102,7 @@ import { UiFeedbackService } from '../../services';
             </div>
 
             <div *ngIf="authMode() === 'signup'" class="space-y-4">
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid gap-3 min-[420px]:grid-cols-2">
                 <div>
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Age</label>
                   <input type="number" [(ngModel)]="age" placeholder="25" class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition focus:border-emerald-300/40">
@@ -116,7 +116,7 @@ import { UiFeedbackService } from '../../services';
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid gap-3 min-[420px]:grid-cols-2">
                 <div>
                   <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Weight kg</label>
                   <input type="number" [(ngModel)]="weight" placeholder="70" class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition focus:border-emerald-300/40">
@@ -133,7 +133,7 @@ import { UiFeedbackService } from '../../services';
                   <button
                     *ngFor="let level of activityLevels"
                     (click)="activityLevel.set(level.value)"
-                    class="w-full rounded-[1.25rem] border p-3 text-left transition"
+                    class="w-full rounded-[1.1rem] border p-3 text-left transition sm:rounded-[1.25rem]"
                     [class.border-emerald-300/35]="activityLevel() === level.value"
                     [class.bg-emerald-300/10]="activityLevel() === level.value"
                     [class.border-white/10]="activityLevel() !== level.value"
@@ -150,7 +150,7 @@ import { UiFeedbackService } from '../../services';
                   <button
                     *ngFor="let goal of goals"
                     (click)="selectedGoal.set(goal.value)"
-                    class="rounded-[1.25rem] border p-3 text-left transition"
+                    class="rounded-[1.1rem] border p-3 text-left transition sm:rounded-[1.25rem]"
                     [class.border-orange-300/35]="selectedGoal() === goal.value"
                     [class.bg-orange-300/10]="selectedGoal() === goal.value"
                     [class.border-white/10]="selectedGoal() !== goal.value"
