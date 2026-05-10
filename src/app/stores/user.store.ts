@@ -3,6 +3,7 @@ import { User, DailyTargets, ActivityLevel } from '../models';
 import { DataService } from '../services/data';
 import { MetabolismService } from '../services/metabolism';
 import { AuthService } from '../services/supabase';
+import { UiFeedbackService } from '../services/ui';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class UserStore {
   private dataService = inject(DataService);
   private metabolismService = inject(MetabolismService);
   private authService = inject(AuthService);
+  private ui = inject(UiFeedbackService);
 
   // Core state
   private _user = signal<User | null>(null);
@@ -73,6 +75,7 @@ export class UserStore {
     } catch (e) {
       this._error.set('Failed to load user data');
       console.error('Failed to load user:', e);
+      this.ui.error('Failed to load user data.');
     } finally {
       this._isLoading.set(false);
     }

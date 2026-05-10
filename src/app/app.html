@@ -90,4 +90,54 @@
       }
     }
   </div>
+
+  @if (ui.pendingCount() > 0) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 px-6 backdrop-blur-sm">
+      <div class="glass-panel rounded-[2rem] px-8 py-7 text-center">
+        <div class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-emerald-400/35 border-t-emerald-300"></div>
+        <p class="text-lg font-semibold text-white">{{ ui.loadingMessage() || 'Working...' }}</p>
+      </div>
+    </div>
+  }
+
+  <div class="pointer-events-none fixed right-4 top-4 z-[80] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+    @for (toast of ui.toasts(); track toast.id) {
+      <div
+        class="pointer-events-auto rounded-2xl border px-4 py-3 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl"
+        [class.border-emerald-300/25]="toast.type === 'success'"
+        [class.bg-emerald-400/12]="toast.type === 'success'"
+        [class.border-rose-300/25]="toast.type === 'error'"
+        [class.bg-rose-400/12]="toast.type === 'error'"
+        [class.border-sky-300/25]="toast.type === 'info'"
+        [class.bg-sky-400/12]="toast.type === 'info'">
+        <div class="flex items-start gap-3">
+          <div class="mt-0.5">
+            <div *ngIf="toast.type === 'success'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-300/20 text-emerald-200">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div *ngIf="toast.type === 'error'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-300/20 text-rose-200">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </div>
+            <div *ngIf="toast.type === 'info'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-300/20 text-sky-200">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="min-w-0 flex-1 text-sm font-medium text-white">{{ toast.message }}</div>
+          <button
+            (click)="ui.dismiss(toast.id)"
+            class="rounded-lg p-1 text-white/60 transition hover:bg-white/8 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
 </div>

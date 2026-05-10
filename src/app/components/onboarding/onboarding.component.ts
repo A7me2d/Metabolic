@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserStore } from '../../stores';
 import { ActivityLevel } from '../../models';
+import { UiFeedbackService } from '../../services';
 
 @Component({
   selector: 'app-onboarding',
@@ -175,6 +176,7 @@ import { ActivityLevel } from '../../models';
 })
 export class OnboardingComponent {
   private userStore = inject(UserStore);
+  private ui = inject(UiFeedbackService);
 
   protected authMode = signal<'signup' | 'signin'>('signup');
   protected isSubmitting = signal(false);
@@ -229,25 +231,32 @@ export class OnboardingComponent {
 
     try {
       if (this.authMode() === 'signin') {
-        await this.userStore.login(this.email, this.password);
+        await this.ui.track('Signing you in...', this.userStore.login(this.email, this.password));
+        this.ui.success('Welcome back.');
         return;
       }
 
-      await this.userStore.createUser(
-        {
-          name: this.name,
-          email: this.email,
-          age: this.age!,
-          gender: this.gender,
-          weight: this.weight!,
-          height: this.height!,
-          activityLevel: this.activityLevel()!,
-          goal: this.selectedGoal()!
-        },
-        this.password
+      await this.ui.track(
+        'Creating your account...',
+        this.userStore.createUser(
+          {
+            name: this.name,
+            email: this.email,
+            age: this.age!,
+            gender: this.gender,
+            weight: this.weight!,
+            height: this.height!,
+            activityLevel: this.activityLevel()!,
+            goal: this.selectedGoal()!
+          },
+          this.password
+        )
       );
+      this.ui.success('Account created successfully.');
     } catch (e) {
-      this.errorMessage.set(e instanceof Error ? e.message : 'Something went wrong.');
+      const message = e instanceof Error ? e.message : 'Something went wrong.';
+      this.errorMessage.set(message);
+      this.ui.error(message);
     } finally {
       this.isSubmitting.set(false);
     }

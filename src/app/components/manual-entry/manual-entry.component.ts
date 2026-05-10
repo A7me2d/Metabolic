@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NutritionStore } from '../../stores';
 import { SupplementType, SUPPLEMENT_TYPES, Macros } from '../../models';
+import { UiFeedbackService } from '../../services';
 
 @Component({
   selector: 'app-manual-entry',
@@ -133,6 +134,7 @@ import { SupplementType, SUPPLEMENT_TYPES, Macros } from '../../models';
 })
 export class ManualEntryComponent {
   private nutritionStore = inject(NutritionStore);
+  private ui = inject(UiFeedbackService);
 
   protected activeTab = signal<'meal' | 'supplement'>('meal');
   protected supplementTypes = SUPPLEMENT_TYPES;
@@ -147,26 +149,38 @@ export class ManualEntryComponent {
 
   async addMeal(): Promise<void> {
     if (!this.mealName || this.mealMacros.cal === 0) return;
-
-    await this.nutritionStore.quickAddMeal(this.mealName, { ...this.mealMacros }, 'manual');
-
-    this.mealName = '';
-    this.mealMacros = { cal: 0, p: 0, c: 0, f: 0 };
+    try {
+      await this.ui.track(
+        'Adding meal...',
+        this.nutritionStore.quickAddMeal(this.mealName, { ...this.mealMacros }, 'manual')
+      );
+      this.mealName = '';
+      this.mealMacros = { cal: 0, p: 0, c: 0, f: 0 };
+      this.ui.success('Meal added successfully.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not add meal.');
+    }
   }
 
   async addSupplement(): Promise<void> {
     if (!this.supplementName) return;
-
-    await this.nutritionStore.addSupplement({
-      userId: '',
-      name: this.supplementName,
-      type: this.supplementType,
-      dosage: this.supplementDosage || undefined,
-      time: this.supplementTime,
-      timestamp: new Date().toISOString()
-    });
-
-    this.supplementName = '';
-    this.supplementDosage = '';
+    try {
+      await this.ui.track(
+        'Adding supplement...',
+        this.nutritionStore.addSupplement({
+          userId: '',
+          name: this.supplementName,
+          type: this.supplementType,
+          dosage: this.supplementDosage || undefined,
+          time: this.supplementTime,
+          timestamp: new Date().toISOString()
+        })
+      );
+      this.supplementName = '';
+      this.supplementDosage = '';
+      this.ui.success('Supplement added successfully.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not add supplement.');
+    }
   }
 }

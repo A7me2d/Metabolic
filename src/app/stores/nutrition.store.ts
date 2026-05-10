@@ -2,6 +2,7 @@ import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { Meal, Supplement, Macros } from '../models';
 import { DataService } from '../services/data';
 import { UserStore } from './user.store';
+import { UiFeedbackService } from '../services/ui';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { UserStore } from './user.store';
 export class NutritionStore {
   private dataService = inject(DataService);
   private userStore = inject(UserStore);
+  private ui = inject(UiFeedbackService);
 
   // Core state
   private _meals = signal<Meal[]>([]);
@@ -101,6 +103,7 @@ export class NutritionStore {
     } catch (e) {
       this._error.set('Failed to load nutrition data');
       console.error('Failed to load daily data:', e);
+      this.ui.error('Failed to load nutrition data.');
     } finally {
       this._isLoading.set(false);
     }

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserStore, NutritionStore } from '../../stores';
 import { ProgressRingComponent } from '../progress-ring';
+import { UiFeedbackService } from '../../services';
 
 @Component({
   selector: 'app-dashboard',
@@ -233,6 +234,7 @@ import { ProgressRingComponent } from '../progress-ring';
 export class DashboardComponent {
   private userStore = inject(UserStore);
   private nutritionStore = inject(NutritionStore);
+  private ui = inject(UiFeedbackService);
 
   protected readonly Math = Math;
   protected user = this.userStore.user;
@@ -258,14 +260,29 @@ export class DashboardComponent {
   }
 
   protected async logout(): Promise<void> {
-    await this.userStore.logout();
+    try {
+      await this.ui.track('Signing you out...', this.userStore.logout());
+      this.ui.success('Logged out successfully.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not log out.');
+    }
   }
 
   async deleteMeal(id: string): Promise<void> {
-    await this.nutritionStore.deleteMeal(id);
+    try {
+      await this.ui.track('Deleting meal...', this.nutritionStore.deleteMeal(id));
+      this.ui.success('Meal removed.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not delete meal.');
+    }
   }
 
   async deleteSupplement(id: string): Promise<void> {
-    await this.nutritionStore.deleteSupplement(id);
+    try {
+      await this.ui.track('Deleting supplement...', this.nutritionStore.deleteSupplement(id));
+      this.ui.success('Supplement removed.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not delete supplement.');
+    }
   }
 }

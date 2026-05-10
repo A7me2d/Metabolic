@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserStore, NutritionStore } from './stores';
 import { VisionService } from './services/vision';
+import { UiFeedbackService } from './services';
 import { 
   DashboardComponent, 
   OnboardingComponent, 
@@ -28,6 +29,7 @@ export class App {
   private userStore = inject(UserStore);
   private nutritionStore = inject(NutritionStore);
   private visionService = inject(VisionService);
+  protected ui = inject(UiFeedbackService);
 
   // State
   protected showCamera = signal(false);
@@ -58,20 +60,32 @@ export class App {
 
   async analyzeImage(dataUrl: string): Promise<void> {
     try {
-      const result = await this.visionService.analyzeFromDataUrl(dataUrl);
+      const result = await this.ui.track(
+        'Analyzing your food photo...',
+        this.visionService.analyzeFromDataUrl(dataUrl)
+      );
       this.lastAiResult.set(result);
       this.showConfirmModal.set(true);
+      this.ui.success('Food analysis is ready.');
     } catch (error) {
       console.error('Failed to analyze image:', error);
-      alert('Failed to analyze image. Please try again.');
+      this.ui.error(error instanceof Error ? error.message : 'Failed to analyze image. Please try again.');
     }
   }
 
-  onFoodConfirmed(data: { foodName: string; macros: { cal: number; p: number; c: number; f: number } }): void {
-    this.nutritionStore.quickAddMeal(data.foodName, data.macros, 'ai');
-    this.showConfirmModal.set(false);
-    this.lastAiResult.set(null);
-    this.lastCapturedImage.set(null);
+  async onFoodConfirmed(data: { foodName: string; macros: { cal: number; p: number; c: number; f: number } }): Promise<void> {
+    try {
+      await this.ui.track(
+        'Saving meal to your log...',
+        this.nutritionStore.quickAddMeal(data.foodName, data.macros, 'ai')
+      );
+      this.showConfirmModal.set(false);
+      this.lastAiResult.set(null);
+      this.lastCapturedImage.set(null);
+      this.ui.success('Meal added to your log.');
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not save this meal.');
+    }
   }
 
   onFoodCancelled(): void {
