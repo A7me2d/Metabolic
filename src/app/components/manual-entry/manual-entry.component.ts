@@ -1,0 +1,172 @@
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NutritionStore } from '../../stores';
+import { SupplementType, SUPPLEMENT_TYPES, Macros } from '../../models';
+
+@Component({
+  selector: 'app-manual-entry',
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="glass-panel rounded-[2rem] overflow-hidden">
+      <div class="flex flex-col gap-5 border-b border-white/10 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+        <div>
+          <div class="text-xs uppercase tracking-[0.3em] text-slate-500">Precision logging</div>
+          <h2 class="mt-2 text-2xl font-bold text-white">Manual nutrition and supplement input</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Fast enough for quick capture, clean enough for accurate tracking when AI is not the right move.</p>
+        </div>
+
+        <div class="flex rounded-2xl border border-white/10 bg-slate-950/40 p-1">
+          <button
+            (click)="activeTab.set('meal')"
+            class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+            [class.bg-emerald-300]="activeTab() === 'meal'"
+            [class.text-slate-950]="activeTab() === 'meal'"
+            [class.text-slate-400]="activeTab() !== 'meal'">
+            Quick meal
+          </button>
+          <button
+            (click)="activeTab.set('supplement')"
+            class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+            [class.bg-orange-300]="activeTab() === 'supplement'"
+            [class.text-slate-950]="activeTab() === 'supplement'"
+            [class.text-slate-400]="activeTab() !== 'supplement'">
+            Supplement
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab() === 'meal'" class="grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:p-8">
+        <div class="space-y-4">
+          <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Food name</label>
+            <input
+              type="text"
+              [(ngModel)]="mealName"
+              placeholder="Chicken rice bowl"
+              class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition focus:border-emerald-300/40">
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Calories</label>
+              <input type="number" [(ngModel)]="mealMacros.cal" placeholder="540" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Protein</label>
+              <input type="number" [(ngModel)]="mealMacros.p" placeholder="34" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Carbs</label>
+              <input type="number" [(ngModel)]="mealMacros.c" placeholder="52" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Fat</label>
+              <input type="number" [(ngModel)]="mealMacros.f" placeholder="18" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-center text-white outline-none focus:border-emerald-300/40">
+            </div>
+          </div>
+
+          <button
+            (click)="addMeal()"
+            [disabled]="!mealName || mealMacros.cal === 0"
+            class="w-full rounded-2xl bg-linear-to-r from-emerald-400 via-lime-300 to-orange-400 px-5 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40">
+            Add meal to today
+          </button>
+        </div>
+
+        <div class="rounded-[1.75rem] border border-emerald-300/12 bg-emerald-300/8 p-6">
+          <div class="text-xs uppercase tracking-[0.28em] text-emerald-200/70">Quick tip</div>
+          <h3 class="mt-3 text-2xl font-bold text-white">Keep entries tight and usable.</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-300">Use simple meal names and rough macros when speed matters. Precision is great, consistency is better.</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab() === 'supplement'" class="grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:p-8">
+        <div class="space-y-4">
+          <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Supplement name</label>
+            <input
+              type="text"
+              [(ngModel)]="supplementName"
+              placeholder="Magnesium glycinate"
+              class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition focus:border-orange-300/40">
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Type</label>
+              <select [(ngModel)]="supplementType" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-white outline-none focus:border-orange-300/40">
+                <option *ngFor="let type of supplementTypes" [value]="type">{{ type | titlecase }}</option>
+              </select>
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+              <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Time</label>
+              <input type="time" [(ngModel)]="supplementTime" class="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-white outline-none focus:border-orange-300/40">
+            </div>
+          </div>
+
+          <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <label class="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Dosage</label>
+            <input
+              type="text"
+              [(ngModel)]="supplementDosage"
+              placeholder="400mg"
+              class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition focus:border-orange-300/40">
+          </div>
+
+          <button
+            (click)="addSupplement()"
+            [disabled]="!supplementName"
+            class="w-full rounded-2xl bg-linear-to-r from-orange-300 via-amber-300 to-lime-300 px-5 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40">
+            Add supplement
+          </button>
+        </div>
+
+        <div class="rounded-[1.75rem] border border-orange-300/12 bg-orange-300/8 p-6">
+          <div class="text-xs uppercase tracking-[0.28em] text-orange-200/70">Reminder</div>
+          <h3 class="mt-3 text-2xl font-bold text-white">Timing matters more than clutter.</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-300">Log only what you actually want to review later. A cleaner supplement log is easier to trust and maintain.</p>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class ManualEntryComponent {
+  private nutritionStore = inject(NutritionStore);
+
+  protected activeTab = signal<'meal' | 'supplement'>('meal');
+  protected supplementTypes = SUPPLEMENT_TYPES;
+
+  protected mealName = '';
+  protected mealMacros: Macros = { cal: 0, p: 0, c: 0, f: 0 };
+
+  protected supplementName = '';
+  protected supplementType: SupplementType = 'vitamin';
+  protected supplementTime = new Date().toTimeString().slice(0, 5);
+  protected supplementDosage = '';
+
+  async addMeal(): Promise<void> {
+    if (!this.mealName || this.mealMacros.cal === 0) return;
+
+    await this.nutritionStore.quickAddMeal(this.mealName, { ...this.mealMacros }, 'manual');
+
+    this.mealName = '';
+    this.mealMacros = { cal: 0, p: 0, c: 0, f: 0 };
+  }
+
+  async addSupplement(): Promise<void> {
+    if (!this.supplementName) return;
+
+    await this.nutritionStore.addSupplement({
+      userId: '',
+      name: this.supplementName,
+      type: this.supplementType,
+      dosage: this.supplementDosage || undefined,
+      time: this.supplementTime,
+      timestamp: new Date().toISOString()
+    });
+
+    this.supplementName = '';
+    this.supplementDosage = '';
+  }
+}

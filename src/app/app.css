@@ -1,0 +1,42 @@
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-shell::before,
+.app-shell::after {
+  content: '';
+  position: fixed;
+  inset: auto;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.26;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-shell::before {
+  top: 5rem;
+  left: -4rem;
+  background: #38bdf8;
+}
+
+.app-shell::after {
+  right: -4rem;
+  bottom: 7rem;
+  background: #f97316;
+}
+
+.app-layer {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px);
+}

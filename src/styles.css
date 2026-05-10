@@ -1,3 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
-
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
+
+:root {
+  color-scheme: dark;
+  --bg: #07111f;
+  --bg-soft: #101d32;
+  --panel: rgba(9, 19, 35, 0.78);
+  --panel-strong: rgba(11, 24, 43, 0.92);
+  --line: rgba(164, 187, 223, 0.14);
+  --line-strong: rgba(164, 187, 223, 0.26);
+  --text: #f4f7fb;
+  --muted: #96a6bf;
+  --accent: #4ade80;
+  --accent-2: #f97316;
+  --accent-3: #38bdf8;
+  --danger: #fb7185;
+  --shadow: 0 32px 80px rgba(0, 0, 0, 0.38);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Manrope', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.18), transparent 26%),
+    radial-gradient(circle at bottom, rgba(74, 222, 128, 0.16), transparent 24%),
+    linear-gradient(160deg, #040813 0%, #081120 42%, #0b1830 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at center, black, transparent 88%);
+  opacity: 0.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(74, 222, 128, 0.28);
+  color: white;
+}
