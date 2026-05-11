@@ -10,7 +10,7 @@ Mifflin-St Jeor Service: Create a specialized service to calculate BMR and provi
 
 2. Gemini 2.0 Flash Integration (Vision API):
 
-api key: AIzaSyBREjCdIgy2it7F-QHRAELez8ZygQkP-04
+api key: AIzaSyDDfXQv3GwkfP9UA8JlmtWT4_D528YoAs4
 
 Task: Implement a VisionService using @google/generative-ai.
 

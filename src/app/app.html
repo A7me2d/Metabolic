@@ -8,86 +8,8 @@
           <p class="mt-2 text-sm text-slate-400">Syncing profile, targets, and daily tracking.</p>
         </div>
       </div>
-    } @else if (!isLoggedIn()) {
-      <app-onboarding />
     } @else {
-      <app-dashboard />
-
-      <div id="manual-entry-section" class="px-3 pb-24 sm:px-4 sm:pb-28 md:px-6">
-        <div class="mx-auto max-w-6xl">
-          <app-manual-entry />
-        </div>
-      </div>
-
-      <div class="fixed bottom-4 right-3 z-40 sm:bottom-5 sm:right-4 md:bottom-8 md:right-8">
-        @if (showAddMenu()) {
-          <div class="absolute bottom-18 right-0 mb-2 flex w-[min(18rem,calc(100vw-1.5rem))] flex-col gap-3 sm:bottom-20 sm:min-w-52">
-            <button
-              (click)="openCamera()"
-              class="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-300/40">
-              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-400/15 text-emerald-300">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </span>
-              <span>
-                <span class="block text-sm font-semibold">Scan food</span>
-                <span class="block text-xs text-slate-400">Use AI to estimate your macros fast.</span>
-              </span>
-            </button>
-
-            <button
-              (click)="openManualEntry()"
-              class="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-white transition duration-300 hover:-translate-y-0.5 hover:border-sky-300/40">
-              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-400/15 text-sky-300">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-              </span>
-              <span>
-                <span class="block text-sm font-semibold">Manual entry</span>
-                <span class="block text-xs text-slate-400">Log meals and supplements with precision.</span>
-              </span>
-            </button>
-          </div>
-        }
-
-        <button
-          (click)="toggleAddMenu()"
-          class="flex h-14 w-14 items-center justify-center rounded-[1.3rem] bg-linear-to-br from-emerald-400 via-lime-300 to-orange-400 text-slate-950 shadow-[0_22px_60px_rgba(74,222,128,0.45)] transition duration-300 hover:scale-105 sm:h-16 sm:w-16 sm:rounded-[1.6rem]"
-          [class.rotate-45]="showAddMenu()">
-          <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 4v16m8-8H4"/>
-          </svg>
-        </button>
-      </div>
-
-      @if (showCamera()) {
-        <div class="fixed inset-0 z-50 flex flex-col bg-slate-950/95 p-3 sm:p-4 backdrop-blur-xl">
-          <button
-            (click)="showCamera.set(false)"
-            class="absolute right-3 top-3 rounded-full border border-white/10 bg-white/5 p-2 text-white/70 transition hover:text-white sm:right-4 sm:top-4">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-          <div class="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center">
-            <app-camera
-              (imageCaptured)="onImageCaptured($event)"
-              (cameraError)="showCamera.set(false)" />
-          </div>
-        </div>
-      }
-
-      @if (showConfirmModal()) {
-        <app-food-confirm-modal
-          [result]="lastAiResult()"
-          [imageBase64]="lastCapturedImage()"
-          [(visible)]="showConfirmModal"
-          (confirmed)="onFoodConfirmed($event)"
-          (cancelled)="onFoodCancelled()" />
-      }
+      <router-outlet />
     }
   </div>
 
@@ -113,28 +35,18 @@
         <div class="flex items-start gap-3">
           <div class="mt-0.5">
             <div *ngIf="toast.type === 'success'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-300/20 text-emerald-200">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             </div>
             <div *ngIf="toast.type === 'error'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-300/20 text-rose-200">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </div>
             <div *ngIf="toast.type === 'info'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-300/20 text-sky-200">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
-              </svg>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
             </div>
           </div>
           <div class="min-w-0 flex-1 text-sm font-medium text-white">{{ toast.message }}</div>
-          <button
-            (click)="ui.dismiss(toast.id)"
-            class="rounded-lg p-1 text-white/60 transition hover:bg-white/8 hover:text-white">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+          <button (click)="ui.dismiss(toast.id)" class="rounded-lg p-1 text-white/60 transition hover:bg-white/8 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
       </div>

@@ -1,0 +1,53 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1>Hypertrophy Workout Plan</h1>
+    <p class="subtitle">6-Day Push/Pull/Legs Split</p>
+  </header>
+
+  <section class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ userStats().streak }}</span>
+        <span class="stat-label">Day Streak</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💪</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ userStats().totalWorkouts }}</span>
+        <span class="stat-label">Workouts</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏋️</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ userStats().totalVolume | number }}</span>
+        <span class="stat-label">kg Lifted</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="weekly-progress">
+    <div class="progress-header">
+      <h2>Week {{ weeklyProgress().weekNumber }}</h2>
+      <span class="progress-count">{{ weeklyProgress().totalWorkouts }}/5 workouts</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="(weeklyProgress().totalWorkouts / 5) * 100"></div>
+    </div>
+  </section>
+
+  <section class="weekly-split">
+    <h2>Weekly Split</h2>
+    <div class="days-grid">
+      @for (day of workoutDays(); track day.id) {
+        <app-day-card
+          [day]="day"
+          [isCompleted]="weeklyProgress().completedDays.includes(day.id)"
+          [isToday]="todayWorkout()?.id === day.id"
+        />
+      }
+    </div>
+  </section>
+</div>

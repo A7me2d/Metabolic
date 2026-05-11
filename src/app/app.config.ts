@@ -6,14 +6,14 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { GEMINI_API_KEY } from './services/vision';
 import { environment } from '../environments/environment';
 import { DataService, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, SupabaseDataService } from './services';
+import { SupabaseService } from './core/services/supabase.service';
 
-// API Key from plan.md
-const GEMINI_API_KEY_VALUE = 'AIzaSyBREjCdIgy2it7F-QHRAELez8ZygQkP-04';
+const GEMINI_API_KEY_VALUE = 'AIzaSyDDfXQv3GwkfP9UA8JlmtWT4_D528YoAs4';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), 
+    provideRouter(routes),
     provideClientHydration(withEventReplay()),
     { provide: GEMINI_API_KEY, useValue: GEMINI_API_KEY_VALUE },
     { provide: SUPABASE_URL, useValue: environment.supabaseUrl },

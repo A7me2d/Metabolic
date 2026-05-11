@@ -1,3 +1,3 @@
 export * from './supabase.tokens';
-export * from './supabase.service';
+export { SupabaseClientService as SupabaseService } from './supabase.service';
 export * from './auth.service';

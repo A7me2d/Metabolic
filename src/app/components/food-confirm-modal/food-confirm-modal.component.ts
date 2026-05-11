@@ -7,7 +7,7 @@ import { GeminiFoodResponse, Macros } from '../../models';
   selector: 'app-food-confirm-modal',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-3 sm:p-4 backdrop-blur-xl" (click)="onBackdropClick($event)">
+    <div *ngIf="visible()" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-3 sm:p-4 backdrop-blur-xl" (click)="onBackdropClick($event)">
       <div class="glass-panel max-h-[94vh] w-full max-w-4xl overflow-auto rounded-[1.75rem] sm:max-h-[92vh] sm:rounded-[2rem]" (click)="$event.stopPropagation()">
         <div class="grid lg:grid-cols-[0.95fr_1.05fr]">
           <div class="relative min-h-56 bg-slate-950/70 sm:min-h-72">

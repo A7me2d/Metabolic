@@ -1,12 +1,16 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserStore, NutritionStore } from '../../stores';
 import { ProgressRingComponent } from '../progress-ring';
-import { UiFeedbackService } from '../../services';
+import { UiFeedbackService, VisionService } from '../../services';
+import { CameraComponent } from '../camera/camera.component';
+import { FoodConfirmModalComponent } from '../food-confirm-modal/food-confirm-modal.component';
+import { ManualEntryComponent } from '../manual-entry/manual-entry.component';
+import { GeminiFoodResponse } from '../../models';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, ProgressRingComponent],
+  imports: [CommonModule, ProgressRingComponent, CameraComponent, FoodConfirmModalComponent, ManualEntryComponent],
   template: `
     <div class="min-h-screen px-3 pb-10 pt-3 sm:px-4 md:px-6 md:pt-6">
       <div class="mx-auto max-w-6xl space-y-4 sm:space-y-5">
@@ -32,6 +36,27 @@ import { UiFeedbackService } from '../../services';
                   <div class="text-xs uppercase tracking-[0.24em] text-slate-400">Entries</div>
                   <div class="mt-2 text-3xl font-bold text-white">{{ meals().length }}</div>
                 </div>
+              </div>
+
+              <!-- Add Meal Buttons -->
+              <div class="flex flex-wrap gap-3">
+                <button
+                  (click)="showCamera.set(true)"
+                  class="flex items-center gap-2 rounded-2xl bg-linear-to-r from-emerald-400 via-lime-300 to-orange-400 px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01]">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  Scan Food
+                </button>
+                <button
+                  (click)="showManual.set(true)"
+                  class="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-semibold text-white transition hover:bg-white/10">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  Manual Entry
+                </button>
               </div>
             </div>
 
@@ -229,6 +254,65 @@ import { UiFeedbackService } from '../../services';
           </div>
         </section>
       </div>
+
+      <!-- Camera Modal -->
+      @if (showCamera()) {
+        <div class="fixed inset-0 z-50 bg-slate-950/90 p-3 sm:p-4 md:p-6 backdrop-blur-xl">
+          <div class="mx-auto max-w-6xl">
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-xl font-bold text-white">Scan your food</h2>
+              <button
+                (click)="showCamera.set(false)"
+                class="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-400 transition hover:bg-white/10">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <app-camera
+              (imageCaptured)="onImageCaptured($event)"
+              (cameraError)="onCameraError($event)" />
+          </div>
+        </div>
+      }
+
+      <!-- Manual Entry Modal -->
+      @if (showManual()) {
+        <div class="fixed inset-0 z-50 bg-slate-950/90 p-3 sm:p-4 md:p-6 backdrop-blur-xl overflow-auto">
+          <div class="mx-auto max-w-6xl">
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-xl font-bold text-white">Add meal manually</h2>
+              <button
+                (click)="showManual.set(false)"
+                class="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-400 transition hover:bg-white/10">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <app-manual-entry />
+          </div>
+        </div>
+      }
+
+      <!-- Food Confirm Modal -->
+      <app-food-confirm-modal
+        [result]="aiResult()"
+        [imageBase64]="capturedImageBase64()"
+        [(visible)]="showConfirmModal"
+        (confirmed)="onFoodConfirmed($event)"
+        (cancelled)="showConfirmModal.set(false)" />
+
+      <!-- AI Analysis Loading Overlay -->
+      @if (isAnalyzing()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl">
+          <div class="text-center">
+            <div class="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-emerald-400/25 border-t-emerald-400"></div>
+            <h3 class="text-xl font-bold text-white">Analyzing your food...</h3>
+            <p class="mt-2 text-sm text-slate-400">AI is identifying the meal and estimating macros</p>
+          </div>
+        </div>
+      }
     </div>
   `
 })
@@ -236,6 +320,7 @@ export class DashboardComponent {
   private userStore = inject(UserStore);
   private nutritionStore = inject(NutritionStore);
   private ui = inject(UiFeedbackService);
+  private visionService = inject(VisionService);
 
   protected readonly Math = Math;
   protected user = this.userStore.user;
@@ -248,6 +333,14 @@ export class DashboardComponent {
   protected targetCalories = this.userStore.targetCalories;
   protected macroTargets = this.userStore.macroTargets;
   protected ringSize = 220;
+
+  // Camera and AI state
+  protected showCamera = signal(false);
+  protected showManual = signal(false);
+  protected showConfirmModal = signal(false);
+  protected aiResult = signal<GeminiFoodResponse | null>(null);
+  protected capturedImageBase64 = signal<string | null>(null);
+  protected isAnalyzing = signal(false);
 
   protected todayDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -298,6 +391,40 @@ export class DashboardComponent {
       this.ui.success('Supplement removed.');
     } catch (error) {
       this.ui.error(error instanceof Error ? error.message : 'Could not delete supplement.');
+    }
+  }
+
+  // Camera and AI handlers
+  protected async onImageCaptured(dataUrl: string): Promise<void> {
+    this.showCamera.set(false);
+    this.capturedImageBase64.set(dataUrl.split(',')[1] ?? null);
+    this.isAnalyzing.set(true);
+
+    try {
+      const result = await this.visionService.analyzeFromDataUrl(dataUrl);
+      this.aiResult.set(result);
+      this.showConfirmModal.set(true);
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not analyze image.');
+      this.capturedImageBase64.set(null);
+    } finally {
+      this.isAnalyzing.set(false);
+    }
+  }
+
+  protected onCameraError(message: string): void {
+    this.ui.error(message);
+    this.showCamera.set(false);
+  }
+
+  protected async onFoodConfirmed(data: { foodName: string; macros: { cal: number; p: number; c: number; f: number } }): Promise<void> {
+    try {
+      await this.ui.track('Adding meal...', this.nutritionStore.quickAddMeal(data.foodName, data.macros, 'ai'));
+      this.ui.success('Meal added!');
+      this.aiResult.set(null);
+      this.capturedImageBase64.set(null);
+    } catch (error) {
+      this.ui.error(error instanceof Error ? error.message : 'Could not add meal.');
     }
   }
 }
